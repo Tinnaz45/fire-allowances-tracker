@@ -4,6 +4,7 @@ export default function BottomNav({ active, onChange }) {
     { key: 'recalls', label: 'Recalls', icon: RecallIcon },
     { key: 'retain', label: 'Retain', icon: RetainIcon },
     { key: 'standby', label: 'Standby', icon: StandbyIcon },
+    { key: 'mand', label: 'M&D', icon: MandIcon },
     { key: 'spoilt', label: 'Meals', icon: MealIcon },
     { key: 'profile', label: 'Profile', icon: ProfileIcon },
   ]
@@ -58,6 +59,15 @@ function StandbyIcon() {
     <svg viewBox="0 0 24 24" {...s}>
       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
       <circle cx="12" cy="9" r="2.5" />
+    </svg>
+  )
+}
+
+function MandIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...s}>
+      <path d="M17 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z" />
+      <path d="M9 7h6" /><path d="M9 11h6" /><path d="M9 15h4" />
     </svg>
   )
 }
