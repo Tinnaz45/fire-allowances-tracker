@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { stationName, STATIONS } from '../lib/supabase'
+import { stationName } from '../lib/supabase'
 import { format } from 'date-fns'
 
 // ── FORMAT HELPERS ────────────────────────────────────────────
@@ -64,21 +64,6 @@ export function ClaimRow({ claim, type, onClick }) {
         <div className="claim-amount">{fmtAUD(amount)}</div>
         <div className="claim-status"><StatusBadge status={claim.status} /></div>
       </div>
-    </div>
-  )
-}
-
-// ── STATION SELECT ────────────────────────────────────────────
-export function StationSelect({ id, value, onChange, label, required }) {
-  return (
-    <div className="field">
-      {label && <label htmlFor={id}>{label}</label>}
-      <select id={id} value={value} onChange={onChange} required={required}>
-        <option value="">Select station…</option>
-        {STATIONS.map(s => (
-          <option key={s.id} value={s.id}>{s.name}</option>
-        ))}
-      </select>
     </div>
   )
 }
