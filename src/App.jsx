@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './hooks/useAuth'
 
 import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
-import { RecallsPage, RetainPage, StandbyPage, SpoiltPage } from './pages/ClaimPages'
+import { RecallsPage, RetainPage, StandbyPage, MandPage, SpoiltPage } from './pages/ClaimPages'
 import { ProfilePage } from './pages/ProfilePage'
 import BottomNav from './components/BottomNav'
 import { LoadingScreen } from './components/UI'
@@ -13,7 +13,8 @@ const PAGE_TITLES = {
   dashboard: 'Home',
   recalls: 'Recalls',
   retain: 'Retain',
-  standby: 'Standby / M&D',
+  standby: 'Standby',
+  mand: 'M&D',
   spoilt: 'Spoilt / Delayed',
   profile: 'Profile',
 }
@@ -30,6 +31,7 @@ function AppShell() {
     recalls: <RecallsPage />,
     retain: <RetainPage />,
     standby: <StandbyPage />,
+    mand: <MandPage />,
     spoilt: <SpoiltPage />,
     profile: <ProfilePage />,
   }
