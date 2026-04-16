@@ -295,6 +295,7 @@ function StandbyForm({ claimType }) {
 
   const label = claimType === 'Standby' ? 'standby' : 'M&D'
   const stnLabel = claimType === 'Standby' ? 'Standby station' : 'M&D station'
+  const pageTitle = claimType === 'Standby' ? 'New standby claim' : 'New Muster & Dismiss claim'
 
   return (
     <div className="page">
@@ -302,7 +303,7 @@ function StandbyForm({ claimType }) {
         Distance is one-way — the app doubles it for the return trip.
       </div>
 
-      <FormCard title={`New ${label} claim`} onSubmit={handleSubmit} submitting={submitting}>
+      <FormCard title={pageTitle} onSubmit={handleSubmit} submitting={submitting}>
         {error && <div className="auth-error">{error}</div>}
 
         <div className="grid-2">
