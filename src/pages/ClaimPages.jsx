@@ -16,7 +16,7 @@ const LABELS = {
 }
 
 function StandbyForm({ claimType }) {
-  const { standby, addStandby, markPaid, deleteClaim } = useClaims()
+  const { standby, addStandby } = useClaims()
   const { profile } = useAuth()
 
   const [form, setForm] = useState({
@@ -43,8 +43,6 @@ function StandbyForm({ claimType }) {
   const travel = +(km * 2 * RATES.kmRate).toFixed(2)
   const nightMealie = form.shift === 'Night' ? RATES.nightStandbyMealie : 0
   const estTotal = travel + nightMealie
-
-  const filteredClaims = standby.filter(c => c.standby_type === claimType)
 
   async function handleSubmit(e) {
     e.preventDefault()
