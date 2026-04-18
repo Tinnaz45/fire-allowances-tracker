@@ -128,6 +128,17 @@ fire-allowance-tracker/
 
 ---
 
+## Development workflow
+
+- All work happens on the `dev` branch — never commit directly to `main`
+- After changes: run `npm run build` and fix any errors
+- If tests exist: run `npm test -- --watchAll=false` and fix failures
+- Only merge `dev → main` when the build is clean
+- If anything breaks: revert in `dev`, do not merge
+- Full workflow details: see [docs/WORKFLOW.md](docs/WORKFLOW.md)
+
+---
+
 ## Future features to add
 
 - Push notifications when a claim is approaching a deadline
