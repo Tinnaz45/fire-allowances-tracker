@@ -166,6 +166,10 @@ export default function Dashboard() {
 
   return (
     <div className="page">
+      {/* DEV PIPELINE TEST — remove after confirmation */}
+      <div style={{ background: '#f59e0b', color: '#000', textAlign: 'center', padding: '6px 12px', borderRadius: 8, fontSize: '0.75rem', fontWeight: 700, marginBottom: 12, letterSpacing: '0.05em' }}>
+        DEV TEST – Pipeline Working
+      </div>
       {/* greeting */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
         <div className="avatar">{initials}</div>
