@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react'
 import { useClaims } from '../hooks/useClaims'
 import { useAuth } from '../hooks/useAuth'
 import { ClaimRow, ClaimDetailSheet, EmptyState, LoadingScreen, fmtAUD } from '../components/UI'
+import ClaimForm from '../components/claims/ClaimForm'
+import ClaimList from '../components/claims/ClaimList'
 
 const TAX_SMALL_MEAL = 10.90
 const TAX_LARGE_MEAL = 20.55
@@ -166,6 +168,9 @@ export default function Dashboard() {
 
   return (
     <div className="page">
+      <ClaimForm />
+      <ClaimList />
+
       {/* greeting */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
         <div className="avatar">{initials}</div>
