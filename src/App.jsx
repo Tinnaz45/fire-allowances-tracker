@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { AuthProvider, useAuth } from './hooks/useAuth'
-import { ClaimsProvider } from './context/ClaimsContext'
 import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
 import { RecallsPage, RetainPage, StandbyPage, MandPage, SpoiltPage } from './pages/ClaimPages'
@@ -44,9 +43,7 @@ function AppContent() {
 export default function App() {
   return (
     <AuthProvider>
-      <ClaimsProvider>
-        <AppContent />
-      </ClaimsProvider>
+      <AppContent />
     </AuthProvider>
   )
 }

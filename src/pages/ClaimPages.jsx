@@ -281,12 +281,10 @@ export function StandbyPage() { return <StandbyMandForm claimType="Standby" /> }
 export function MandPage()    { return <StandbyMandForm claimType="M&D" /> }
 
 // ── SPOILT / MEALS PAGE ───────────────────────────────────────────────────────
-const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Supper']
-
 export function SpoiltPage() {
   const { addSpoilt } = useClaims()
   const [form, setForm] = useState({
-    date: today(), mealType: 'Dinner', shift: 'Day',
+    date: today(), mealType: 'Spoilt', shift: 'Day',
     platoon: '', stationId: '', claimStnId: '',
     callTime: '', callNumber: '',
   })
@@ -318,7 +316,8 @@ export function SpoiltPage() {
         </Field>
         <Field label="Meal type">
           <select name="mealType" value={form.mealType} onChange={set}>
-            {MEAL_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
+            <option value="Spoilt">Spoilt (interrupted during meal)</option>
+            <option value="Delayed">Delayed (couldn't eat on time)</option>
           </select>
         </Field>
         <Field label="Shift">
