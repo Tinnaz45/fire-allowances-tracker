@@ -1,6 +1,5 @@
-'use client'
-export const dynamic = 'force-dynamic'
-import App from '../src/App'
+'use client';
+export const dynamic = 'force-dynamic';
 export default function Page() {
-  return <App />
+  return <div>App loading...</div>;
 }
