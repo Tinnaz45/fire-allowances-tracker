@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
 
@@ -9,29 +8,41 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Guard: supabase is null when env vars are missing (e.g. during build)
-    if (!supabase) {
+    if (typeof window === 'undefined') {
       setLoading(false)
       return
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      if (session) fetchProfile(session.user.id)
-      else setLoading(false)
+    let unsubscribe
+
+    import('../lib/supabase').then(({ supabase }) => {
+      if (!supabase) {
+        setLoading(false)
+        return
+      }
+
+      supabase.auth.getSession().then(({ data }) => {
+        const s = data?.session ?? null
+        setSession(s)
+        if (s) fetchProfile(supabase, s.user.id)
+        else setLoading(false)
+      })
+
+      const { data } = supabase.auth.onAuthStateChange((_event, s) => {
+        setSession(s ?? null)
+        if (s) fetchProfile(supabase, s.user.id)
+        else { setProfile(null); setLoading(false) }
+      })
+
+      unsubscribe = data?.subscription?.unsubscribe
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      if (session) fetchProfile(session.user.id)
-      else { setProfile(null); setLoading(false) }
-    })
-
-    return () => subscription.unsubscribe()
+    return () => {
+      if (unsubscribe) unsubscribe()
+    }
   }, [])
 
-  async function fetchProfile(userId) {
-    if (!supabase) return
+  async function fetchProfile(supabase, userId) {
     const { data } = await supabase
       .from('profiles')
       .select('*')
@@ -42,6 +53,7 @@ export function AuthProvider({ children }) {
   }
 
   async function updateProfile(updates) {
+    const { supabase } = await import('../lib/supabase')
     if (!supabase) return { data: null, error: new Error('Supabase not configured') }
     const { data, error } = await supabase
       .from('profiles')
@@ -54,21 +66,25 @@ export function AuthProvider({ children }) {
   }
 
   async function signIn(email, password) {
+    const { supabase } = await import('../lib/supabase')
     if (!supabase) return { error: new Error('Supabase not configured') }
     return supabase.auth.signInWithPassword({ email, password })
   }
 
   async function signUp(email, password) {
+    const { supabase } = await import('../lib/supabase')
     if (!supabase) return { error: new Error('Supabase not configured') }
     return supabase.auth.signUp({ email, password })
   }
 
   async function resetPassword(email) {
+    const { supabase } = await import('../lib/supabase')
     if (!supabase) return { error: new Error('Supabase not configured') }
     return supabase.auth.resetPasswordForEmail(email)
   }
 
   async function signOut() {
+    const { supabase } = await import('../lib/supabase')
     if (!supabase) return
     await supabase.auth.signOut()
   }
