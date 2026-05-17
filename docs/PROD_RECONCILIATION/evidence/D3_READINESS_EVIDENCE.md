@@ -187,3 +187,102 @@ In order, with evidence captured at each step into this directory:
 
 Only after step 11 may a *separate* chat author the D3 entry brief and
 attempt the §7 approval block.
+
+---
+
+## Appendix — Re-evaluation after live-DDL chat (2026-05-17T10:00Z)
+
+> Update authored at the close of the live DEV-side D2 execution chat
+> (branch `claude/d2-alignment-execution-R7iyZ`, parent SHA `4aed08d`).
+> Full execution evidence is in `D2_EXECUTION_EVIDENCE.md` §17.
+
+**Headline determination is unchanged: D3 readiness = NOT READY.**
+The live-DDL chat closed the largest deferred item (the `DROP TABLE`
+itself plus row-count and post-drop validation) but **cannot** close
+the items it is mission-forbidden from touching (PR / merge /
+`d2-complete` tag / deployed-runtime manual smoke / governance edits).
+
+### Delta vs the §"D3 entry checklist" table above
+
+| Section | Previous status | New status (post-live-DDL chat) | Reason |
+| ------- | --------------- | -------------------------------- | ------ |
+| C. "DEV Supabase: `fat.distance_cache` does not exist" | NOT YET | **YES** | `DROP TABLE` executed against DEV `kctctvpobbizhkiqkgqw`; post-drop information_schema query returns 0 rows. See `D2_EXECUTION_EVIDENCE.md` §17.5–§17.6. |
+| E. Manual smoke (login / profile / Recall / Standby / Mark Paid) | NOT YET | **STILL NOT YET** | Requires deployed DEV runtime; bounded smoke (`next build`) green only. |
+| F. Pre-action row count = 0 | DEFERRED | **YES** | `select count(*) from fat.distance_cache` = 0 captured. |
+| F. Supabase backup ID + timestamp | DEFERRED | **PARTIAL** | No MCP `create_backup` primitive exists; PITR anchor timestamp recorded (`2026-05-17T09:59:07Z`) as the rollback target. See `D2_EXECUTION_EVIDENCE.md` §17.1. |
+| F. Post-action `\dt fat.*` / `\dp fat.*` | DEFERRED | **YES** | Captured (`\dt` returns canonical set minus `distance_cache`; `\dp` shows zero policies on the dropped table). |
+| G. No PROD MCP call | YES | **YES (reconfirmed)** | Zero references to PROD project ID `wgcqzamuspuqpedqasbc` in the live-DDL chat. |
+| G. No Vercel PROD deploy | YES | **YES (reconfirmed)** | Zero Vercel calls in the live-DDL chat. |
+| H. DEV snapshot taken **after** D2 completion | NO | **NO — STILL** | D2 not yet `d2-complete`-tagged. The PITR anchor at §17.1 is a pre-DROP anchor, not a "post-D2 rehearsal snapshot". |
+
+### Items now closable / closed
+
+- **B-2 = REMOVE, applied** moves from PARTIAL to **YES (DDL applied
+  against DEV)**.
+- **R-03 invariant** ("forgotten runtime caller") remains LOW;
+  re-confirmed via five static greps immediately before the DROP, all
+  empty.
+- **R-09 / R-10** (orphan policies, dependency surprises):
+  **MITIGATED** for the dropped object — zero policies remain
+  referencing `fat.distance_cache`, zero dependent views, zero
+  inbound FK references.
+
+### Items NOT closable by this chat (carry-forward to subsequent chats)
+
+1. **D2 PR open / reviewer sign-off / merge** — mission-forbidden in
+   the live-DDL chat (no PR/merge/deploy authority).
+2. **`d2-complete` tag on integration-branch head** — gated on PR
+   merge.
+3. **Manual UI smoke against deployed DEV runtime** — no runtime
+   provisioned by the live-DDL chat.
+4. **`RISK_REGISTER.md` R-01 → `MITIGATED`** — requires a fresh
+   governance round per `ARCHITECTURE_ALIGNMENT_RULES.md` §9.3.
+   `D2_EXECUTION_CHECKLIST.md` §5 prohibits direct edits to
+   `RISK_REGISTER.md` from execution chats while §6 requires the
+   flip; the conflict is recorded in `D2_EXECUTION_EVIDENCE.md`
+   §17.10.
+5. **DEV-vs-canonical `\df fat.*` / extra `fat.*` table drift** —
+   pre-existing DEV state (friend system + replication helpers)
+   surfaces against the §4 canonical expectation; **not** introduced
+   by D2; needs governance ratification of an updated canonical list
+   (or removal) before §4 `\df` / `\dt` can declare a fully canonical
+   match on its current wording. See `D2_EXECUTION_EVIDENCE.md`
+   §17.6.
+6. **D3 entry brief** — separate-chat artefact by construction.
+
+### Updated outstanding-blockers list (supersedes §"Outstanding blockers" above)
+
+1. D2 PR open / merge / sign-off (steps 10, 11).
+2. `d2-complete` tag on integration-branch head (step 15).
+3. Manual DEV smoke (step 14) on deployed runtime.
+4. `RISK_REGISTER.md` R-01 → `MITIGATED` via governance pass.
+5. Governance ratification of `\df fat.*` / extra `fat.*` table drift
+   (or its remediation) so §4 of the D2 checklist passes verbatim.
+6. D3 entry brief authored in a separate chat
+   (`D3_REHEARSAL_ENTRY_CHECKLIST.md` §4).
+
+**None of these is a D2 regression.** Items 1–3 and 6 were already
+expected; items 4 and 5 are governance items surfaced (not caused) by
+the live-DDL chat.
+
+### Permanent posture statements (refresh)
+
+- **R-04** (project-ID confusion): **MITIGATED (reconfirmed in
+  live-DDL chat)** — every MCP call in the chat targeted DEV
+  `kctctvpobbizhkiqkgqw`; zero references to PROD
+  `wgcqzamuspuqpedqasbc`.
+- **R-05** (cleanup creep): **MITIGATED (reconfirmed)** — exactly one
+  DDL statement executed: `DROP TABLE fat.distance_cache;`.
+- **R-09 / R-10**: **MITIGATED for the dropped object** (no orphans,
+  no surprise dependencies).
+- **R-14** (concurrent merge): no concurrent merges observed in the
+  live-DDL chat window.
+
+### Conclusion
+
+The bounded live DEV-side D2 mission completed successfully:
+`fat.distance_cache` is dropped from DEV; the rollback posture is
+documented; no PROD touched; no schema expansion; no runtime
+regression detected in bounded smoke. **D3 readiness remains NOT
+READY** until the carry-forward items above are closed in their
+respective chats.
