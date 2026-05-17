@@ -7,7 +7,7 @@
 
 | ID | Risk | Severity | Status | Phase gated | Mitigation / Notes |
 | -- | ---- | -------- | ------ | ----------- | ------------------ |
-| R-01 | Stale `supabase-migration-v4-distance-tables.sql` at repo root replayed by a contributor, recreating legacy `public.fat_*` tables and duplicating RLS policies. | MED | OPEN → MITIGATED on D2 archive | D2 entry: tolerable; D3 entry: must be `MITIGATED`. | Archive under `docs/PROD_RECONCILIATION/archive/legacy-migrations/` with `DO NOT REPLAY` README (B-3). After archive, residual replay risk depends only on someone fetching the file out of archive deliberately. |
+| R-01 | Stale `supabase-migration-v4-distance-tables.sql` at repo root replayed by a contributor, recreating legacy `public.fat_*` tables and duplicating RLS policies. | MED | MITIGATED | D2 entry: tolerable; D3 entry: must be `MITIGATED`. | Archive under `docs/PROD_RECONCILIATION/archive/legacy-migrations/` with `DO NOT REPLAY` README (B-3). After archive, residual replay risk depends only on someone fetching the file out of archive deliberately. **Flipped to `MITIGATED` 2026-05-17 by D3 readiness governance pass (`GOVERNANCE_CONFLICT_RESOLUTION.md` §4). Preconditions verified: (a) archive applied at repo commit `4aed08d` — file present at `docs/PROD_RECONCILIATION/archive/legacy-migrations/supabase-migration-v4-distance-tables.sql`, sha256 `e36e4db9…ce9e620` byte-identical to pre-move; (b) live `DROP TABLE fat.distance_cache` executed against DEV `kctctvpobbizhkiqkgqw` at 2026-05-17T10:00:11Z per `evidence/D2_EXECUTION_EVIDENCE.md` §17.5; (c) archive `README.md` with `SUPERSEDED — DO NOT REPLAY` notice present.** |
 | R-02 | `fat.payment_components` ledger write path silently masks a future schema mismatch (e.g. if the table is added with a different column shape). | LOW | ACCEPTED | None | B-1 deferral: try/catch warns to console. Future adoption decision will replace try/catch with hard write path. |
 | R-03 | Removing `fat.distance_cache` while a forgotten caller still exists. | LOW | MITIGATED | D2 entry. | Grep evidence captured (B-2). Pre-drop precondition: row count = 0; backup taken. Rollback: revert `fat-schema.sql`; do not re-execute drop. |
 | R-04 | DEV Supabase project accidentally targeted as PROD (or vice versa). | HIGH | MITIGATED | All phases. | Explicit project ID in every MCP call. PROD project ID `wgcqzamuspuqpedqasbc` is on the prohibited-target list for D2/D3. |
@@ -28,9 +28,11 @@
 - **D2 entry gate:** no `OPEN` risk with severity `HIGH` or `CRIT`. Met
   today.
 - **D3 entry gate:** no `OPEN` risk with severity `MED` or higher.
-  Currently blocked by R-01 (clears on D2 archive), R-07 (requires
-  reviewer reaffirmation at D3 entry), R-13 (requires snapshot
-  identification at D3 entry).
+  R-01 = `MITIGATED` as of 2026-05-17 (D3 readiness governance pass).
+  Currently blocked by R-07 (requires reviewer reaffirmation at D3
+  entry) and R-13 (requires snapshot identification at D3 entry);
+  both flip in the D3 entry chat once their respective evidence is
+  captured.
 - **D4 entry gate** (PROD reconciliation): defined in a future
   `D4_PROD_RECONCILIATION_SCOPE.md` — not authored here.
 
