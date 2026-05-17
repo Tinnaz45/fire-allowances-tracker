@@ -29,7 +29,6 @@ All in the `fat` schema:
 | `fat.claim_groups`        | Parent claim group rows (one per user-initiated claim).       |
 | `fat.stations`            | Station reference data (48 rows seed; read-only for users).   |
 | `fat.profile_ext`         | FAT-specific per-user profile (station, platoon, address …).  |
-| `fat.distance_cache`      | v1 per-user home→station distance cache.                      |
 | `fat.home_address`        | v4 geocoded home address (one row per user).                  |
 | `fat.station_distances`   | v4 user-specific home→station distance estimates.             |
 | `fat.recalls`             | Recall claim rows (parent + auto-generated child components). |
@@ -135,8 +134,10 @@ the following: public, …”*, the schema has not been added.
   followed automatically; index/constraint names were renamed for
   consistency and triggers were recreated against `fat.set_updated_at`.
 * `public.station_distances` (v1 inter-station cache, 0 rows, no code
-  references) was dropped — `fat.distance_cache` and
-  `fat.station_distances` superseded it.
+  references) was dropped — `fat.home_address` and
+  `fat.station_distances` (v4) superseded it. The intermediate v1
+  `fat.distance_cache` table is itself superseded and retired in D2 —
+  see [`PROD_RECONCILIATION/BLOCKER_RESOLUTIONS.md#B-2`](./PROD_RECONCILIATION/BLOCKER_RESOLUTIONS.md).
 * `public.set_updated_at()` was dropped — it had no callers outside the
   FAT triggers we replaced.
 * The migration has **not** been applied to PROD
@@ -152,4 +153,12 @@ the following: public, …”*, the schema has not been added.
   in the live schema; the ledger table itself is not. The ledger
   references in `lib/claims/ClaimsContext.js#updatePaymentStatus` are
   defensively try/catch-wrapped and silently skip when the table is
-  absent.
+  absent. The ledger adoption question is formally **deferred** per
+  [`PROD_RECONCILIATION/BLOCKER_RESOLUTIONS.md#B-1`](./PROD_RECONCILIATION/BLOCKER_RESOLUTIONS.md);
+  no D2 action is taken on `fat.payment_components`.
+* The stale repo-root file `supabase-migration-v4-distance-tables.sql`
+  (legacy `public.fat_*` layout, superseded by the schema move in
+  `8efce33`) has been archived under
+  [`PROD_RECONCILIATION/archive/legacy-migrations/`](./PROD_RECONCILIATION/archive/legacy-migrations/)
+  with a `DO NOT REPLAY` notice — see
+  [`PROD_RECONCILIATION/BLOCKER_RESOLUTIONS.md#B-3`](./PROD_RECONCILIATION/BLOCKER_RESOLUTIONS.md).

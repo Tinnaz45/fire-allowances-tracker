@@ -140,17 +140,6 @@ create table if not exists fat.profile_ext (
 
 -- ─── Distance estimation (v1 cache + v4 home/station distance) ────────────────
 
-create table if not exists fat.distance_cache (
-  id                uuid primary key default gen_random_uuid(),
-  user_id           uuid not null references auth.users(id) on delete cascade,
-  home_address      text not null,
-  station_id        integer not null,
-  distance_km       numeric(6,1) not null,
-  source            text,
-  user_override_km  numeric(6,1),
-  calculated_at     timestamptz not null default now(),
-  unique (user_id, home_address, station_id)
-);
 
 create table if not exists fat.home_address (
   id                 uuid primary key default gen_random_uuid(),
@@ -369,7 +358,6 @@ alter table fat.financial_years   enable row level security;
 alter table fat.claim_sequences   enable row level security;
 alter table fat.claim_groups      enable row level security;
 alter table fat.profile_ext       enable row level security;
-alter table fat.distance_cache    enable row level security;
 alter table fat.home_address      enable row level security;
 alter table fat.station_distances enable row level security;
 alter table fat.recalls           enable row level security;
@@ -383,7 +371,6 @@ create policy users_manage_own on fat.financial_years   for all using (auth.uid(
 create policy users_manage_own on fat.claim_sequences   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy users_manage_own on fat.claim_groups      for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy users_manage_own on fat.profile_ext       for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-create policy users_manage_own on fat.distance_cache    for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy users_manage_own on fat.home_address      for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy users_manage_own on fat.station_distances for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy users_manage_own on fat.recalls           for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
