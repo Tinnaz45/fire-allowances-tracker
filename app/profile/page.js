@@ -112,8 +112,12 @@ export default function ProfilePage() {
     try {
       const stationLabel = stationId ? (stationName ? `FS${stationId} - ${stationName}` : `FS${stationId}`) : ''
 
+      // public.profiles is the shared cross-app table; email is NOT NULL and
+      // sourced from auth.users. Always include it in the upsert so the INSERT
+      // side of ON CONFLICT satisfies the constraint and stays auth-consistent.
       const { error: profileError } = await supabase.from('profiles').upsert({
         id: session.user.id,
+        email: session.user.email,
         first_name: firstName.trim(),
         last_name: lastName.trim(),
       }, { onConflict: 'id' })
